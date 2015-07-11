@@ -10,15 +10,15 @@
 <body>
     <nav class="navbar navbar-default" role="navigation">
        <div class="navbar-header">
-          <a class="navbar-brand" href="/">首页</a>
-          <a class="navbar-brand" href="/summary">概要</a>
+          <a class="navbar-brand" href="/">数据包包列表</a>
+          <a class="navbar-brand" href="/summary">文件信息</a>
+          <a class="navbar-brand" href="/conv">会话列表</a>
+          <a class="navbar-brand" href="/expertinfo">告警与提示</a>
        </div>
-       <div>
-          <ul class="nav navbar-nav">
-             <li class="active"><a href="/conv">会话</a></li>
-             <li><a href="/expertinfo">警告和提示</a></li>
-          </ul>
-       </div>
+       <form action="/" method="GET">
+            过滤条件：<input type="text" value="{{ cached_filter }}" name="dfilter" />
+            <input type="submit" value="过滤"/>
+       <form>
     </nav>
     {% block content %}                                                                                                                                  
     {% endblock %}

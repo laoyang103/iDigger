@@ -1,26 +1,19 @@
 import pyshark
 import subprocess as sp
+from tshark import cached
 from django.shortcuts import render
 
 # Create your views here.
 def home(request):
-    psummary_list = []
-    cap = pyshark.FileCapture('./capture_test.pcapng', only_summaries=True, keep_packets=True)
-    try:
-        while True:
-            pdict = cap.next()._fields
-            pdict['No'] = pdict['No.']
-            psummary_list.append(pdict)
-    except: pass
+    display_filter = request.GET.get('dfilter')
+    psummary_list = cached.get_summary_list(display_filter)
+    if None != cached.dfilter: cached_filter = cached.dfilter
     return render(request, 'list.html', locals())
 
 def decode(request):
     num = int(request.GET.get('num'))
-    cap = pyshark.FileCapture('./capture_test.pcapng', keep_packets=True)
-    try:
-        while True: cap.next()
-    except: pass
-    decode_dict, pkt = {}, cap._packets[num]
+    decode_dict, pkt = {}, cached.get_pkt_decode(num)
+    if pkt.number:          decode_dict['number']           = pkt.number
     if pkt.eth:             decode_dict['link_layer']       = pkt.eth._all_fields
     if pkt.ip:              decode_dict['network_layer']    = pkt.ip._all_fields
     if pkt.transport_layer: decode_dict['transport_layer']  = pkt[pkt.transport_layer]._all_fields
