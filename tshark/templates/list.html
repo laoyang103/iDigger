@@ -5,8 +5,8 @@
     <tbody>
         {% for psummary in psummary_list %}
             <tr>
-                <td>{{ psummary }}</td>
                 <td><a href='/decode?num={{ psummary.No }}'>decode</a></td>
+                <td>{{ psummary }}</td>
             </tr>
         {% endfor %}
     </tbody>

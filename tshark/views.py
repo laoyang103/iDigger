@@ -46,7 +46,7 @@ def expertinfo(request):
         currinfo.append(record)
     p.stdout.close()
     p.stdin.close()
-    return render(request, 'detail.html', {'content': currinfo})
+    return render(request, 'detail.html', {'content': expert})
 
 def summary(request):
     outsummary = {}
@@ -67,6 +67,7 @@ def conv(request):
     p = sp.Popen(['tshark', '-q', '-nn', '-r', './capture_test.pcapng', '-z', 'conv,tcp'], stdin=sp.PIPE, stdout=sp.PIPE, close_fds=True)
     SRCINFO, CONVSTR, DSTINFO, PACKETS_DST2SRC, BYTES_DST2SRC, PACKETS_SRC2DST, BYTES_SRC2DST, PACKETS, BYTES, REL_START, DURATION = range(11)
     
+
     line = p.stdout.readline()
     while line:
         line = p.stdout.readline()
@@ -87,6 +88,9 @@ def conv(request):
         conv['Bytes DST -> SRC']    = fields[BYTES_DST2SRC]
         conv['Rel Start']           = fields[REL_START]
         conv['Duration']            = fields[DURATION]
+        conv['Filter-IP']           = '(ip.addr eq %s and ip.addr eq %s)' % (srcsock[SOCK_ADDR], dstsock[SOCK_ADDR])
+        conv['Filter-TCP']          = '(ip.addr eq %s and ip.addr eq %s) and (tcp.port eq %s and tcp.port eq %s)' % \
+                                       (srcsock[SOCK_ADDR], dstsock[SOCK_ADDR], srcsock[SOCK_PORT], dstsock[SOCK_PORT])
         outconv.append(conv)
     p.stdout.close()
     p.stdin.close()
