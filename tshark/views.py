@@ -5,7 +5,7 @@ from django.shortcuts import render
 
 # Create your views here.
 def home(request):
-    display_filter = request.GET.get('dfilter')
+    display_filter = request.GET.get('flt')
     psummary_list = cached.get_summary_list(display_filter)
     if None != cached.dfilter: cached_filter = cached.dfilter
     return render(request, 'list.html', locals())
@@ -21,9 +21,12 @@ def decode(request):
     return render(request, 'detail.html', {'content': decode_dict})
 
 def expertinfo(request):
+    display_filter = request.GET.get('flt')
     FREQUENCY, GROUP, PROTOCOL, SUMMARY = range(4)
     expert = {'Errors': [], 'Warns': [], 'Notes': [], 'Chats': []}
-    p = sp.Popen(['tshark', '-q', '-r', './capture_test.pcapng', '-z', 'expert'], stdin=sp.PIPE, stdout=sp.PIPE, close_fds=True)
+
+    base_args = ['tshark', '-q', '-r', './capture_test.pcapng', '-z']
+    p = sp.Popen(gen_statistics_args(base_args, 'expert', display_filter), stdin=sp.PIPE, stdout=sp.PIPE, close_fds=True)
 
     currinfo = None
     line = p.stdout.readline()
@@ -63,10 +66,12 @@ def summary(request):
 
 def conv(request):
     outconv = []
+    display_filter = request.GET.get('flt')
     NAME, VALUE = SOCK_ADDR, SOCK_PORT = range(2)
-    p = sp.Popen(['tshark', '-q', '-nn', '-r', './capture_test.pcapng', '-z', 'conv,tcp'], stdin=sp.PIPE, stdout=sp.PIPE, close_fds=True)
     SRCINFO, CONVSTR, DSTINFO, PACKETS_DST2SRC, BYTES_DST2SRC, PACKETS_SRC2DST, BYTES_SRC2DST, PACKETS, BYTES, REL_START, DURATION = range(11)
-    
+
+    base_args = ['tshark', '-q', '-nn', '-r', './capture_test.pcapng', '-z']
+    p = sp.Popen(gen_statistics_args(base_args, 'conv,tcp', display_filter), stdin=sp.PIPE, stdout=sp.PIPE, close_fds=True)
 
     line = p.stdout.readline()
     while line:
@@ -95,4 +100,11 @@ def conv(request):
     p.stdout.close()
     p.stdin.close()
     return render(request, 'detail.html', {'content': outconv})
+
+def gen_statistics_args(base_args, statistics, flt):
+    if None != flt and '' != flt: 
+        base_args.append(statistics + ',' + flt)
+    else:
+        base_args.append(statistics)
+    return base_args
 
