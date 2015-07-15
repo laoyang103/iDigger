@@ -2,6 +2,7 @@ import pyshark
 import subprocess as sp
 from tshark import cached
 from django.shortcuts import render
+from django.http import HttpResponse
 
 # Create your views here.
 def home(request):
@@ -9,6 +10,12 @@ def home(request):
     psummary_list = cached.get_summary_list(display_filter)
     if None != cached.dfilter: cached_filter = cached.dfilter
     return render(request, 'list.html', locals())
+
+def plist(request):
+    display_filter = request.GET.get('flt')
+    psummary_list = cached.get_summary_list(display_filter)
+    if None != cached.dfilter: cached_filter = cached.dfilter
+    return HttpResponse(str(psummary_list))
 
 def decode(request):
     num = int(request.GET.get('num'))
@@ -18,7 +25,7 @@ def decode(request):
     if pkt.ip:              decode_dict['network_layer']    = pkt.ip._all_fields
     if pkt.transport_layer: decode_dict['transport_layer']  = pkt[pkt.transport_layer]._all_fields
     if pkt.highest_layer:   decode_dict['app_layer']        = pkt[pkt.highest_layer]._all_fields
-    return render(request, 'detail.html', {'content': decode_dict})
+    return HttpResponse(str(decode_dict))
 
 def expertinfo(request):
     display_filter = request.GET.get('flt')
@@ -49,7 +56,7 @@ def expertinfo(request):
         currinfo.append(record)
     p.stdout.close()
     p.stdin.close()
-    return render(request, 'detail.html', {'content': expert})
+    return HttpResponse(str(expert))
 
 def summary(request):
     outsummary = {}
@@ -62,7 +69,7 @@ def summary(request):
         line = p.stdout.readline()
     p.stdout.close()
     p.stdin.close()
-    return render(request, 'detail.html', {'content': outsummary})
+    return HttpResponse(str(outsummary))
 
 def conv(request):
     outconv = []
@@ -99,7 +106,7 @@ def conv(request):
         outconv.append(conv)
     p.stdout.close()
     p.stdin.close()
-    return render(request, 'detail.html', {'content': outconv})
+    return HttpResponse(str(outconv))
 
 def gen_statistics_args(base_args, statistics, flt):
     if None != flt and '' != flt: 

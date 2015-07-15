@@ -20,6 +20,7 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', 'tshark.views.home', name='home'),
     url(r'^conv', 'tshark.views.conv', name='conv'),
+    url(r'^plist', 'tshark.views.plist', name='plist'),
     url(r'^decode', 'tshark.views.decode', name='decode'),
     url(r'^summary', 'tshark.views.summary', name='summary'),
     url(r'^expertinfo', 'tshark.views.expertinfo', name='expertinfo'),
