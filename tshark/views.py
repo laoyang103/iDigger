@@ -58,18 +58,18 @@ def expertinfo(request):
     p.stdin.close()
     return HttpResponse(str(expert))
 
-def summary(request):
-    outsummary = {}
+def capinfo(request):
+    capinfo = {}
     NAME, VALUE = SOCK_ADDR, SOCK_PORT = range(2)
     p = sp.Popen(['capinfos', './capture_test.pcapng'], stdin=sp.PIPE, stdout=sp.PIPE, close_fds=True)
     line = p.stdout.readline()
     while line:
         fields = line.split(':', 1)
-        outsummary[fields[NAME]] = fields[VALUE].strip()
+        capinfo[fields[NAME]] = fields[VALUE].strip()
         line = p.stdout.readline()
     p.stdout.close()
     p.stdin.close()
-    return HttpResponse(str(outsummary))
+    return HttpResponse(str(capinfo))
 
 def conv(request):
     outconv = []

@@ -22,6 +22,6 @@ urlpatterns = [
     url(r'^conv', 'tshark.views.conv', name='conv'),
     url(r'^plist', 'tshark.views.plist', name='plist'),
     url(r'^decode', 'tshark.views.decode', name='decode'),
-    url(r'^summary', 'tshark.views.summary', name='summary'),
+    url(r'^capinfo', 'tshark.views.capinfo', name='capinfo'),
     url(r'^expertinfo', 'tshark.views.expertinfo', name='expertinfo'),
 ]
