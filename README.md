@@ -22,9 +22,9 @@
 上一部可能遇到的问题 :
 
     安装pyshark时需要编译python-lxml源码，需要安装如下依赖：
-        sudo apt-get install libxml2-dev libxslt-dev python2.7-dev
+    sudo apt-get install libxml2-dev libxslt-dev python2.7-dev
     编译lxml源码时可能会遇到-lz not found，此时需要安装libzip-dev
-        sudo apt-get install libzip-dev
+    sudo apt-get install libzip-dev
     
 运行 :
     
