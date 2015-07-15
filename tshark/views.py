@@ -29,7 +29,7 @@ def decode(request):
 
 def expertinfo(request):
     display_filter = request.GET.get('flt')
-    FREQUENCY, GROUP, PROTOCOL, SUMMARY = range(4)
+    FILTER, FREQUENCY, GROUP, PROTOCOL, SUMMARY = range(5)
     expert = {'Errors': [], 'Warns': [], 'Notes': [], 'Chats': []}
 
     base_args = ['tshark', '-q', '-r', './capture_test.pcapng', '-z']
@@ -42,13 +42,14 @@ def expertinfo(request):
         if '\n' == line or '====' in line or 'Frequency' in line: 
             continue
 
-        fields = line.strip().split(None, 3)
+        fields = line.strip().split(None, 4)
         if 0 == len(fields): continue
         if not fields[0].isdigit() and expert.has_key(fields[0]): 
             currinfo = expert[fields[0]]
             continue
 
         record = {}
+        record['Filter']            = fields[FILTER]
         record['Frequency']         = fields[FREQUENCY]
         record['Group']             = fields[GROUP]
         record['Protocol']          = fields[PROTOCOL]
