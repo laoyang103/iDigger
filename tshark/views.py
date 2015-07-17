@@ -15,7 +15,9 @@ def plist(request):
     display_filter = request.GET.get('flt')
     psummary_list = cached.get_summary_list(display_filter)
     if None != cached.dfilter: cached_filter = cached.dfilter
-    return HttpResponse(str(psummary_list))
+    response = HttpResponse(str(psummary_list))
+    response['Access-Control-Allow-Origin'] = '*'
+    return response
 
 def decode(request):
     num = int(request.GET.get('num'))
@@ -25,7 +27,9 @@ def decode(request):
     if pkt.ip:              decode_dict['network_layer']    = pkt.ip._all_fields
     if pkt.transport_layer: decode_dict['transport_layer']  = pkt[pkt.transport_layer]._all_fields
     if pkt.highest_layer:   decode_dict['app_layer']        = pkt[pkt.highest_layer]._all_fields
-    return HttpResponse(str(decode_dict))
+    response = HttpResponse(str(decode_dict))
+    response['Access-Control-Allow-Origin'] = '*'
+    return response
 
 def expertinfo(request):
     display_filter = request.GET.get('flt')
@@ -57,7 +61,9 @@ def expertinfo(request):
         currinfo.append(record)
     p.stdout.close()
     p.stdin.close()
-    return HttpResponse(str(expert))
+    response = HttpResponse(str(expert))
+    response['Access-Control-Allow-Origin'] = '*'
+    return response
 
 def capinfo(request):
     capinfo = {}
@@ -70,7 +76,9 @@ def capinfo(request):
         line = p.stdout.readline()
     p.stdout.close()
     p.stdin.close()
-    return HttpResponse(str(capinfo))
+    response = HttpResponse(str(capinfo))
+    response['Access-Control-Allow-Origin'] = '*'
+    return response
 
 def conv(request):
     outconv = []
@@ -107,7 +115,9 @@ def conv(request):
         outconv.append(conv)
     p.stdout.close()
     p.stdin.close()
-    return HttpResponse(str(outconv))
+    response = HttpResponse(str(outconv))
+    response['Access-Control-Allow-Origin'] = '*'
+    return response
 
 def gen_statistics_args(base_args, statistics, flt):
     if None != flt and '' != flt: 
