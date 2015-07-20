@@ -3,6 +3,7 @@ import subprocess as sp
 from tshark import cached
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 def home(request):
@@ -11,16 +12,22 @@ def home(request):
     if None != cached.dfilter: cached_filter = cached.dfilter
     return render(request, 'list.html', locals())
 
+@csrf_exempt
 def plist(request):
-    display_filter = request.GET.get('flt')
+    display_filter = None
+    if request.method == 'GET':  display_filter = request.GET.get('flt')
+    if request.method == 'POST': display_filter = request.POST.get('flt')
     psummary_list = cached.get_summary_list(display_filter)
     if None != cached.dfilter: cached_filter = cached.dfilter
     response = HttpResponse(str(psummary_list))
     response['Access-Control-Allow-Origin'] = '*'
     return response
 
+@csrf_exempt
 def decode(request):
-    num = int(request.GET.get('num'))
+    num = None
+    if request.method == 'GET':  num = int(request.GET.get('num'))
+    if request.method == 'POST': num = int(request.POST.get('num'))
     decode_dict, pkt = {}, cached.get_pkt_decode(num)
     if pkt.number:          decode_dict['number']           = pkt.number
     if pkt.eth:             decode_dict['link_layer']       = pkt.eth._all_fields
@@ -31,8 +38,11 @@ def decode(request):
     response['Access-Control-Allow-Origin'] = '*'
     return response
 
+@csrf_exempt
 def expertinfo(request):
-    display_filter = request.GET.get('flt')
+    display_filter = None
+    if request.method == 'GET':  display_filter = request.GET.get('flt')
+    if request.method == 'POST': display_filter = request.POST.get('flt')
     FILTER, FREQUENCY, GROUP, PROTOCOL, SUMMARY = range(5)
     expert = {'Errors': [], 'Warns': [], 'Notes': [], 'Chats': []}
 
@@ -65,6 +75,7 @@ def expertinfo(request):
     response['Access-Control-Allow-Origin'] = '*'
     return response
 
+@csrf_exempt
 def capinfo(request):
     capinfo = {}
     NAME, VALUE = SOCK_ADDR, SOCK_PORT = range(2)
@@ -80,9 +91,12 @@ def capinfo(request):
     response['Access-Control-Allow-Origin'] = '*'
     return response
 
+@csrf_exempt
 def conv(request):
     outconv = []
-    display_filter = request.GET.get('flt')
+    display_filter = None
+    if request.method == 'GET':  display_filter = request.GET.get('flt')
+    if request.method == 'POST': display_filter = request.POST.get('flt')
     NAME, VALUE = SOCK_ADDR, SOCK_PORT = range(2)
     SRCINFO, CONVSTR, DSTINFO, PACKETS_DST2SRC, BYTES_DST2SRC, PACKETS_SRC2DST, BYTES_SRC2DST, PACKETS, BYTES, REL_START, DURATION = range(11)
 
