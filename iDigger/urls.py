@@ -24,4 +24,5 @@ urlpatterns = [
     url(r'^decode', 'tshark.views.decode', name='decode'),
     url(r'^capinfo', 'tshark.views.capinfo', name='capinfo'),
     url(r'^expertinfo', 'tshark.views.expertinfo', name='expertinfo'),
+    url(r'^set_dfilter', 'tshark.views.set_dfilter', name='set_dfilter'),
 ]

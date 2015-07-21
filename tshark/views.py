@@ -7,19 +7,21 @@ from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 def home(request):
-    display_filter = request.GET.get('flt')
-    psummary_list = cached.get_summary_list(display_filter)
-    if None != cached.dfilter: cached_filter = cached.dfilter
+    psummary_list = cached.get_summary_list()
     return render(request, 'list.html', locals())
 
 @csrf_exempt
 def plist(request):
-    display_filter = None
-    if request.method == 'GET':  display_filter = request.GET.get('flt')
-    if request.method == 'POST': display_filter = request.POST.get('flt')
-    psummary_list = cached.get_summary_list(display_filter)
-    if None != cached.dfilter: cached_filter = cached.dfilter
+    psummary_list = cached.get_summary_list()
     response = HttpResponse(str(psummary_list))
+    response['Access-Control-Allow-Origin'] = '*'
+    return response
+
+@csrf_exempt
+def set_dfilter(request):
+    if request.method == 'GET':  cached.set_dfilter(request.GET.get('dflt'))
+    if request.method == 'POST': cached.set_dfilter(request.POST.get('dflt'))
+    response = HttpResponse('Y')
     response['Access-Control-Allow-Origin'] = '*'
     return response
 
@@ -40,14 +42,11 @@ def decode(request):
 
 @csrf_exempt
 def expertinfo(request):
-    display_filter = None
-    if request.method == 'GET':  display_filter = request.GET.get('flt')
-    if request.method == 'POST': display_filter = request.POST.get('flt')
     FILTER, FREQUENCY, GROUP, PROTOCOL, SUMMARY = range(5)
     expert = {'Errors': [], 'Warns': [], 'Notes': [], 'Chats': []}
 
     base_args = ['tshark', '-q', '-r', './capture_test.pcapng', '-z']
-    p = sp.Popen(gen_statistics_args(base_args, 'expert', display_filter), stdin=sp.PIPE, stdout=sp.PIPE, close_fds=True)
+    p = sp.Popen(gen_statistics_args(base_args, 'expert', cached.dfilter), stdin=sp.PIPE, stdout=sp.PIPE, close_fds=True)
 
     currinfo = None
     line = p.stdout.readline()
@@ -94,14 +93,11 @@ def capinfo(request):
 @csrf_exempt
 def conv(request):
     outconv = []
-    display_filter = None
-    if request.method == 'GET':  display_filter = request.GET.get('flt')
-    if request.method == 'POST': display_filter = request.POST.get('flt')
     NAME, VALUE = SOCK_ADDR, SOCK_PORT = range(2)
     SRCINFO, CONVSTR, DSTINFO, PACKETS_DST2SRC, BYTES_DST2SRC, PACKETS_SRC2DST, BYTES_SRC2DST, PACKETS, BYTES, REL_START, DURATION = range(11)
 
     base_args = ['tshark', '-q', '-nn', '-r', './capture_test.pcapng', '-z']
-    p = sp.Popen(gen_statistics_args(base_args, 'conv,tcp', display_filter), stdin=sp.PIPE, stdout=sp.PIPE, close_fds=True)
+    p = sp.Popen(gen_statistics_args(base_args, 'conv,tcp', cached.dfilter), stdin=sp.PIPE, stdout=sp.PIPE, close_fds=True)
 
     line = p.stdout.readline()
     while line:

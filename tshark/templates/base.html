@@ -15,6 +15,10 @@
           <a class="navbar-brand" href="/conv">会话列表</a>
           <a class="navbar-brand" href="/expertinfo">告警与提示</a>
        </div>
+       <form action='/set_dfilter'>
+           设置过滤器: <input type="text" name="dflt"></input>
+           <input type="submit" value="确定"></input>
+       </form>
     </nav>
     {% block content %}                                                                                                                                  
     {% endblock %}
