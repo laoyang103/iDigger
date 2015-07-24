@@ -1,6 +1,7 @@
 import pyshark
 import subprocess as sp
 from tshark import cached
+from tshark.models import userflt
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -9,6 +10,23 @@ from django.views.decorators.csrf import csrf_exempt
 def home(request):
     psummary_list = cached.get_summary_list()
     return render(request, 'list.html', locals())
+
+def uflts(request):
+    reslist = []
+    flist = userflt.objects.all()
+    for f in flist: reslist.append({'id': f.id, 'name': f.name})
+    response = HttpResponse(str(reslist))
+    response['Access-Control-Allow-Origin'] = '*'
+    return response
+
+def uflts_add(request):
+    pname=None
+    if request.method == 'GET':   pname = request.GET.get('name')
+    if request.method == 'POST':  pname = request.POST.get('name')
+    userflt(name=pname).save()
+    response = HttpResponse('Y')
+    response['Access-Control-Allow-Origin'] = '*'
+    return response
 
 @csrf_exempt
 def plist(request):

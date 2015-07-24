@@ -25,4 +25,6 @@ urlpatterns = [
     url(r'^capinfo', 'tshark.views.capinfo', name='capinfo'),
     url(r'^expertinfo', 'tshark.views.expertinfo', name='expertinfo'),
     url(r'^set_dfilter', 'tshark.views.set_dfilter', name='set_dfilter'),
+    url(r'^uflts$', 'tshark.views.uflts', name='uflts'),
+    url(r'^uflts/add', 'tshark.views.uflts_add', name='uflts_add'),
 ]
