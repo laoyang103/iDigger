@@ -14,7 +14,7 @@ def home(request):
 def uflts(request):
     reslist = []
     flist = userflt.objects.all()
-    for f in flist: reslist.append({'id': f.id, 'name': f.name})
+    for f in flist: reslist.append({'id': f.id, 'name': f.name.encode("ascii")})
     response = HttpResponse(str(reslist))
     response['Access-Control-Allow-Origin'] = '*'
     return response
