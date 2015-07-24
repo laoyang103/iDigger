@@ -31,11 +31,7 @@ def decode(request):
     if request.method == 'GET':  num = int(request.GET.get('num'))
     if request.method == 'POST': num = int(request.POST.get('num'))
     decode_dict, pkt = {}, cached.get_pkt_decode(num)
-    if pkt.number:          decode_dict['number']           = pkt.number
-    if pkt.eth:             decode_dict['link_layer']       = pkt.eth._all_fields
-    if pkt.ip:              decode_dict['network_layer']    = pkt.ip._all_fields
-    if pkt.transport_layer: decode_dict['transport_layer']  = pkt[pkt.transport_layer]._all_fields
-    if pkt.highest_layer:   decode_dict['app_layer']        = pkt[pkt.highest_layer]._all_fields
+    for layer in pkt.layers: decode_dict['Layer ' + layer.layer_name.upper()] = layer._all_fields
     response = HttpResponse(str(decode_dict))
     response['Access-Control-Allow-Origin'] = '*'
     return response
