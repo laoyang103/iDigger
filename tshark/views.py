@@ -13,8 +13,8 @@ def home(request):
 
 def uflts(request):
     reslist = []
-    flist = userflt.objects.all()
-    for f in flist: reslist.append({'id': f.id, 'name': f.name.encode("ascii")})
+    flist = userflt.objects.values('name').distinct()
+    for f in flist: reslist.append({'name': f['name'].encode("ascii")})
     response = HttpResponse(str(reslist))
     response['Access-Control-Allow-Origin'] = '*'
     return response
@@ -136,10 +136,28 @@ def conv(request):
         conv['Filter-IP']           = '(ip.addr eq %s and ip.addr eq %s)' % (srcsock[SOCK_ADDR], dstsock[SOCK_ADDR])
         conv['Filter-TCP']          = '(ip.addr eq %s and ip.addr eq %s) and (tcp.port eq %s and tcp.port eq %s)' % \
                                        (srcsock[SOCK_ADDR], dstsock[SOCK_ADDR], srcsock[SOCK_PORT], dstsock[SOCK_PORT])
+        conv['Filter-TCP-Stream']   = '%s:%s,%s:%s' % \
+                                       (srcsock[SOCK_ADDR], srcsock[SOCK_PORT], dstsock[SOCK_ADDR], dstsock[SOCK_PORT])
         outconv.append(conv)
     p.stdout.close()
     p.stdin.close()
     response = HttpResponse(str(outconv))
+    response['Access-Control-Allow-Origin'] = '*'
+    return response
+
+@csrf_exempt
+def follow_tcp_stream(request):
+    tcp_stream_flt=None
+    if request.method == 'GET':   tcp_stream_flt = request.GET.get('tcp_stream_flt')
+    if request.method == 'POST':  tcp_stream_flt = request.POST.get('tcp_stream_flt')
+
+    base_args = ['tshark', '-q', '-r', './capture_test.pcapng', '-z']
+    p = sp.Popen(gen_statistics_args(base_args, 'follow,tcp,ascii', tcp_stream_flt), stdin=sp.PIPE, stdout=sp.PIPE, close_fds=True)
+    lines = p.stdout.read()
+    p.stdout.close()
+    p.stdin.close()
+
+    response = HttpResponse(lines)
     response['Access-Control-Allow-Origin'] = '*'
     return response
 
