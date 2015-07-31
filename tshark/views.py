@@ -153,7 +153,7 @@ def follow_tcp_stream(request):
 
     base_args = ['tshark', '-q', '-r', './capture_test.pcapng', '-z']
     p = sp.Popen(gen_statistics_args(base_args, 'follow,tcp,ascii', tcp_stream_flt), stdin=sp.PIPE, stdout=sp.PIPE, close_fds=True)
-    lines = p.stdout.read()
+    lines = txt2html(p.stdout.read())
     p.stdout.close()
     p.stdin.close()
 
@@ -168,3 +168,18 @@ def gen_statistics_args(base_args, statistics, flt):
         base_args.append(statistics)
     return base_args
 
+def txt2html(txt):
+    def escape(txt):
+        txt = txt.replace('&','&#38;')
+        txt = txt.replace(' ','&#160;')
+        txt = txt.replace('<','&#60;')
+        txt = txt.replace('>','&#62;')
+        txt = txt.replace('"','&#34;')
+        txt = txt.replace('\'','&#39;')
+        return txt
+    txt = escape(txt)
+    lines = txt.split('\n')
+    for i, line in enumerate(lines):
+        lines[i] = '<p>' + line + '</p>'
+    txt = ''.join(lines)
+    return txt
