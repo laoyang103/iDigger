@@ -161,6 +161,31 @@ def follow_tcp_stream(request):
     response['Access-Control-Allow-Origin'] = '*'
     return response
 
+@csrf_exempt
+def filter_expression(request):
+    lines = None
+    with open('packet-filter.json') as f:
+        lines = f.readlines()
+    response = HttpResponse(lines)
+    response['Access-Control-Allow-Origin'] = '*'
+    return response
+
+@csrf_exempt
+def packet_len(request):
+    res = []
+    base_args = ['tshark', '-q', '-r', './capture_test.pcapng', '-z', 'plen,tree']
+    field_names = ['Topic / Item', 'Count', 'Average', 'Min', 'val', 'Max', 'val', 'Rate', '(ms)', 'Percent', 'Burst', 'rate', 'Burst', 'start']
+    p = sp.Popen(base_args, stdin=sp.PIPE, stdout=sp.PIPE, close_fds=True)
+    line = p.stdout.readline()
+    while line:
+        line = p.stdout.readline().replace('Packet Lengths', 'Packet-Lengths')
+        fields = line.split()
+        if len(fields) != 9: continue
+        res.append(dict(zip(field_names, fields)))
+    response = HttpResponse(res)
+    response['Access-Control-Allow-Origin'] = '*'
+    return response
+
 def gen_statistics_args(base_args, statistics, flt):
     if None != flt and '' != flt: 
         base_args.append(statistics + ',' + flt)
