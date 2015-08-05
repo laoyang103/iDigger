@@ -30,4 +30,5 @@ urlpatterns = [
     url(r'^follow_tcp_stream', 'tshark.views.follow_tcp_stream', name='follow_tcp_stream'),
     url(r'^filter_expression', 'tshark.views.filter_expression', name='filter_expression'),
     url(r'^packet_len', 'tshark.views.packet_len', name='packet_len'),
+    url(r'^io_phs', 'tshark.views.io_phs', name='io_phs'),
 ]

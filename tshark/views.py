@@ -186,6 +186,15 @@ def packet_len(request):
     response['Access-Control-Allow-Origin'] = '*'
     return response
 
+@csrf_exempt
+def io_phs(request):
+    base_args = ['tshark', '-q', '-r', './capture_test.pcapng', '-z', 'io,phs']
+    p = sp.Popen(base_args, stdin=sp.PIPE, stdout=sp.PIPE, close_fds=True)
+    lines = p.stdout.readlines()
+    response = HttpResponse(lines)
+    response['Access-Control-Allow-Origin'] = '*'
+    return response
+
 def gen_statistics_args(base_args, statistics, flt):
     if None != flt and '' != flt: 
         base_args.append(statistics + ',' + flt)
