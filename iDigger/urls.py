@@ -28,4 +28,6 @@ urlpatterns = [
     url(r'^uflts$', 'tshark.views.uflts', name='uflts'),
     url(r'^uflts/add', 'tshark.views.uflts_add', name='uflts_add'),
     url(r'^follow_tcp_stream', 'tshark.views.follow_tcp_stream', name='follow_tcp_stream'),
+    url(r'^filter_expression', 'tshark.views.filter_expression', name='filter_expression'),
+    url(r'^packet_len', 'tshark.views.packet_len', name='packet_len'),
 ]

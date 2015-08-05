@@ -172,7 +172,7 @@ def filter_expression(request):
 
 @csrf_exempt
 def packet_len(request):
-    res = []
+    out_json = []
     base_args = ['tshark', '-q', '-r', './capture_test.pcapng', '-z', 'plen,tree']
     field_names = ['Topic / Item', 'Count', 'Average', 'Min', 'val', 'Max', 'val', 'Rate', '(ms)', 'Percent', 'Burst', 'rate', 'Burst', 'start']
     p = sp.Popen(base_args, stdin=sp.PIPE, stdout=sp.PIPE, close_fds=True)
@@ -181,8 +181,8 @@ def packet_len(request):
         line = p.stdout.readline().replace('Packet Lengths', 'Packet-Lengths')
         fields = line.split()
         if len(fields) != 9: continue
-        res.append(dict(zip(field_names, fields)))
-    response = HttpResponse(res)
+        out_json.append(dict(zip(field_names, fields)))
+    response = HttpResponse(str(out_json))
     response['Access-Control-Allow-Origin'] = '*'
     return response
 
