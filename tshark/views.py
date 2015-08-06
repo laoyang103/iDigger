@@ -174,13 +174,29 @@ def filter_expression(request):
 def packet_len(request):
     out_json = []
     base_args = ['tshark', '-q', '-r', './capture_test.pcapng', '-z', 'plen,tree']
-    field_names = ['Topic / Item', 'Count', 'Average', 'Min', 'val', 'Max', 'val', 'Rate', '(ms)', 'Percent', 'Burst', 'rate', 'Burst', 'start']
+    field_names = ['Topic / Item', 'Count', 'Average', 'Min val', 'Max val', 'Rate (ms)', 'Percent', 'Burst rate', 'Burst start']
     p = sp.Popen(base_args, stdin=sp.PIPE, stdout=sp.PIPE, close_fds=True)
     line = p.stdout.readline()
     while line:
         line = p.stdout.readline().replace('Packet Lengths', 'Packet-Lengths')
         fields = line.split()
-        if len(fields) != 9: continue
+        if len(fields) != len(field_names): continue
+        out_json.append(dict(zip(field_names, fields)))
+    response = HttpResponse(str(out_json))
+    response['Access-Control-Allow-Origin'] = '*'
+    return response
+
+@csrf_exempt
+def ip_hosts(request):
+    out_json = []
+    base_args = ['tshark', '-q', '-r', './capture_test.pcapng', '-z', 'ip_hosts,tree']
+    field_names = ['Topic / Item', 'Count', 'Rate (ms)', 'Percent', 'Burst rate', 'Burst start']
+    p = sp.Popen(base_args, stdin=sp.PIPE, stdout=sp.PIPE, close_fds=True)
+    line = p.stdout.readline()
+    while line:
+        line = p.stdout.readline().replace('IP Addresses', 'IP Addresses')
+        fields = line.split()
+        if len(fields) != len(field_names): continue
         out_json.append(dict(zip(field_names, fields)))
     response = HttpResponse(str(out_json))
     response['Access-Control-Allow-Origin'] = '*'

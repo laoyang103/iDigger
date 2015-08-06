@@ -31,4 +31,5 @@ urlpatterns = [
     url(r'^filter_expression', 'tshark.views.filter_expression', name='filter_expression'),
     url(r'^packet_len', 'tshark.views.packet_len', name='packet_len'),
     url(r'^io_phs', 'tshark.views.io_phs', name='io_phs'),
+    url(r'^ip_hosts', 'tshark.views.ip_hosts', name='ip_hosts'),
 ]
