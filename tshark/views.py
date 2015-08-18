@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-  
 import pyshark
 import subprocess as sp
 from tshark import cached
@@ -46,10 +47,16 @@ def set_dfilter(request):
 @csrf_exempt
 def decode(request):
     num = None
+    layername = {'UDP': '传输层', 'TCP': '传输层', 'IP': '网络层', 'ETH': '链路层'}
     if request.method == 'GET':  num = int(request.GET.get('num'))
     if request.method == 'POST': num = int(request.POST.get('num'))
     decode_dict, pkt = {}, cached.get_pkt_decode(num)
-    for layer in pkt.layers: decode_dict['Layer ' + layer.layer_name.upper()] = layer._all_fields
+    for layer in pkt.layers: 
+        if not layername.has_key(layer.layer_name.upper()): 
+            decode_dict[layer.layer_name.upper()] = layer._all_fields
+        else:
+            decode_dict[layername[layer.layer_name.upper()] + ' (' + \
+                layer.layer_name.upper() + ')'] = layer._all_fields
     response = HttpResponse(str(decode_dict))
     response['Access-Control-Allow-Origin'] = '*'
     return response
@@ -66,6 +73,7 @@ def expertinfo(request):
     line = p.stdout.readline()
     while line:
         line = p.stdout.readline()
+        print line
         if '\n' == line or '====' in line or 'Frequency' in line: 
             continue
 
