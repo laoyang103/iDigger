@@ -9,7 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 def home(request):
-    psummary_list = cached.get_summary_list()
+    psummary_list = cached.get_summary_list(1)
     return render(request, 'list.html', locals())
 
 def uflts(request):
@@ -31,7 +31,11 @@ def uflts_add(request):
 
 @csrf_exempt
 def plist(request):
-    psummary_list = cached.get_summary_list()
+    page = None
+    if request.method == 'GET':  page = request.GET.get('page')
+    if request.method == 'POST': page = request.POST.get('page')
+    if None == page: page = 1
+    psummary_list = cached.get_summary_list(int(page))
     response = HttpResponse(str(psummary_list))
     response['Access-Control-Allow-Origin'] = '*'
     return response

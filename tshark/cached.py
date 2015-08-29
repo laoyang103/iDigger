@@ -5,10 +5,10 @@ decodes_cap = None
 summarys_cap = None
 psummary_list = []
 
-def get_summary_list():
+def get_summary_list(page):
     global summarys_cap, psummary_list
     if None == summarys_cap: set_dfilter('');
-    return psummary_list
+    return psummary_list[10*(page - 1):(page)*10]
 
 def set_dfilter(dflt):
     global summarys_cap, psummary_list, dfilter
