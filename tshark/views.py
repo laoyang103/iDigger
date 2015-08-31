@@ -51,7 +51,7 @@ def set_dfilter(request):
 @csrf_exempt
 def decode(request):
     num = None
-    layername = {'UDP': '传输层', 'TCP': '传输层', 'IP': '网络层', 'ETH': '链路层'}
+    layername = {'UDP': 'Transmission', 'TCP': 'Transmission', 'IP': 'Network', 'ETH': 'Ethernet'}
     if request.method == 'GET':  num = int(request.GET.get('num'))
     if request.method == 'POST': num = int(request.POST.get('num'))
     decode_dict, pkt = {}, cached.get_pkt_decode(num)
