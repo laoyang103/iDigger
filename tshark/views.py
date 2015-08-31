@@ -31,11 +31,16 @@ def uflts_add(request):
 
 @csrf_exempt
 def plist(request):
-    page = None
-    if request.method == 'GET':  page = request.GET.get('page')
-    if request.method == 'POST': page = request.POST.get('page')
-    if None == page: page = 1
-    psummary_list = cached.get_summary_list(int(page))
+    start = limit = None
+    if request.method == 'GET':  
+        start = request.GET.get('start')
+        limit = request.GET.get('limit')
+    if request.method == 'POST':  
+        start = request.POST.get('start')
+        limit = request.POST.get('limit')
+    if None == start: start = 0
+    if None == limit: limit = 10
+    psummary_list = cached.get_summary_list(int(start), int(limit))
     response = HttpResponse(str(psummary_list))
     response['Access-Control-Allow-Origin'] = '*'
     return response
